@@ -1,0 +1,20 @@
+name: Jules Architecture Sync
+on:
+  schedule:
+    - cron: '0 3 10,25 * *'
+  workflow_dispatch:
+
+jobs:
+  architecture:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Architecture Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Analyze the current directory structure, module dependencies, and service interactions.
+            Update any Mermaid diagrams or architecture overview documents in the repository to reflect 
+            the latest component relationships accurately, and open a pull request with the updates.

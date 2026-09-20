@@ -1,0 +1,21 @@
+name: Jules Performance Optimizer
+on:
+  schedule:
+    - cron: '0 1 20 * *' # 20th of every month at 1 AM
+  workflow_dispatch:
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Performance Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Analyze the codebase for performance bottlenecks, inefficient algorithms, 
+            redundant database queries (such as N+1 issues), or memory leaks.
+            Implement targeted performance optimizations, verify that all benchmarks and tests pass, 
+            and open a pull request with the improvements.

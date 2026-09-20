@@ -1,0 +1,20 @@
+name: Jules Localization Sync
+on:
+  schedule:
+    - cron: '0 4 1,15 * *' # 1st and 15th of every month
+  workflow_dispatch:
+
+jobs:
+  i18n:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules i18n Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Scan the codebase for new or updated hardcoded strings or missing translation keys in the localization files.
+            Synchronize the base locale files with any newly introduced UI text, ensure proper formatting, 
+            and open a pull request with the updates.

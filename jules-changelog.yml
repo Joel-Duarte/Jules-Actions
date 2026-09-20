@@ -1,0 +1,21 @@
+name: Jules Changelog Drafter
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Changelog Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            A new tag '${{ github.ref_name }}' has been pushed. 
+            Review the commits and pull requests merged since the previous tag.
+            Synthesize these changes into a clear, categorized changelog entry (Features, Bug Fixes, Breaking Changes) 
+            and update the CHANGELOG.md file via a pull request.

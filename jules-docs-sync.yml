@@ -1,0 +1,20 @@
+name: Jules Documentation Sync
+on:
+  schedule:
+    - cron: '0 5 * * 1' # Every Monday at 5 AM
+  workflow_dispatch:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Documentation Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Review the recent code structure, public interfaces, and configuration files.
+            Identify any drift between the implementation and the documentation (such as the README, API docs, or setup guides).
+            Update the documentation accurately and open a pull request with the improvements.

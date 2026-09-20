@@ -1,0 +1,21 @@
+name: Jules Maintenance Agent
+on:
+  schedule:
+    - cron: '0 3 * * 1' # Every Monday at 3 AM
+  workflow_dispatch:
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Maintenance Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          starting_branch: 'main'
+          prompt: |
+            You are a repository maintenance agent. Analyze the codebase for dead code,
+            unused dependencies, and minor code smells. Implement cleanups, verify that
+            all existing tests pass successfully, and open a pull request with your changes.

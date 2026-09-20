@@ -1,0 +1,20 @@
+name: Jules Technical Debt Cleaner
+on:
+  schedule:
+    - cron: '0 2 15 * *'
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Tech Debt Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Scan the codebase for TODO, FIXME, and HACK comments. 
+            Identify comments that refer to resolved issues or trivial fixes that can now be completed safely.
+            Implement the necessary code changes, verify correctness with the test suite, and open a pull request.

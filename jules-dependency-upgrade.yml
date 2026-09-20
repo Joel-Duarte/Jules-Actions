@@ -1,0 +1,20 @@
+name: Jules Dependency Upgrade
+on:
+  schedule:
+    - cron: '0 4 1 * *' # First day of every month at 4 AM
+  workflow_dispatch:
+
+jobs:
+  upgrade:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Dependency Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Check the project dependency manifests for outdated packages or minor updates.
+            Safely update compatible packages, run the full test suite to ensure no breaking changes occur, 
+            and open a pull request detailing the upgraded dependencies.

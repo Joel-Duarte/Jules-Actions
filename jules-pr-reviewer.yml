@@ -1,0 +1,24 @@
+name: Jules PR Code Reviewer
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Run Jules Code Reviewer
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            You are a senior code reviewer. Review the changes in this pull request.
+            Analyze the diff for:
+            - Logic errors, edge cases, and performance bottlenecks
+            - Security vulnerabilities or improper input handling
+            - Adherence to clean coding standards
+            
+            Provide a clear, constructive review comment summarizing your findings and classifying them by severity.

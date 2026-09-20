@@ -1,0 +1,24 @@
+name: Jules Database Migration Reviewer
+on:
+  push:
+    paths:
+      - 'db/migrations/**'
+      - 'prisma/**'
+      - 'drizzle/**'
+      - 'src/models/**'
+
+jobs:
+  migration:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Migration Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Analyze the recent database migration scripts or ORM model updates.
+            Check for breaking schema changes (such as dropping columns without deprecation paths, 
+            missing foreign key indices, or non-nullable fields without defaults).
+            Propose safe refactoring steps or fallback migration strategies and open a pull request.

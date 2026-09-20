@@ -1,0 +1,28 @@
+name: Jules Security Scan
+on:
+  schedule:
+    - cron: '0 6 * * *' # Every day at 6 AM
+  workflow_dispatch:
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Security Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            You are a security agent. Scan the codebase for vulnerabilities and fix them:
+            CRITICAL (fix immediately):
+            - Hardcoded secrets, API keys, passwords
+            - SQL injection, command injection
+            - Missing auth on sensitive endpoints
+            HIGH PRIORITY:
+            - XSS, CSRF vulnerabilities
+            - Insecure direct object references
+            - Missing input validation
+            
+            Implement fixes, ensure tests pass, and open a pull request.

@@ -1,0 +1,20 @@
+name: Jules Test Coverage Agent
+on:
+  schedule:
+    - cron: '0 2 * * 3' # Every Wednesday at 2 AM
+  workflow_dispatch:
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Test Coverage Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Analyze the codebase to find core modules or functions with low test coverage.
+            Write robust unit tests for these uncovered paths, run the test suite to verify success, 
+            and open a pull request with the new test implementations.

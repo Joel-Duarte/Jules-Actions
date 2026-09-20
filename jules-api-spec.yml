@@ -1,0 +1,24 @@
+name: Jules API Spec Sync
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/routes/**'
+      - 'controllers/**'
+      - 'api/**'
+
+jobs:
+  apispec:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules API Spec Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Review recent modifications to backend route handlers, controllers, or endpoint definitions.
+            Update the corresponding OpenAPI/Swagger specification files to match the latest parameters, 
+            request bodies, and response schemas, then open a pull request.

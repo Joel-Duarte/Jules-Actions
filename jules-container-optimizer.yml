@@ -1,0 +1,24 @@
+name: Jules Container Optimizer
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Dockerfile'
+      - 'Containerfile'
+      - '**.dockerfile'
+
+jobs:
+  container:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Container Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Analyze the repository Dockerfile or container specifications.
+            Update base images to secure, lightweight versions, implement multi-stage build patterns 
+            to reduce image size, eliminate unnecessary layer caching vulnerabilities, and open a pull request.

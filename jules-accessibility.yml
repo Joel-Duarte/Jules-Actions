@@ -1,0 +1,20 @@
+name: Jules Accessibility Agent
+on:
+  schedule:
+    - cron: '0 4 * * 2' # Every Tuesday at 4 AM
+  workflow_dispatch:
+
+jobs:
+  accessibility:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Run Jules Accessibility Agent
+        uses: google-labs-code/jules-invoke@v1
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            Review frontend UI components, templates, and views for accessibility compliance.
+            Identify missing ARIA attributes, improper contrast handling, unlabelled form elements, 
+            and non-semantic markup. Implement fixes to meet WCAG guidelines and open a pull request.
