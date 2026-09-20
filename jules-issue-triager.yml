@@ -1,0 +1,23 @@
+name: Jules Issue Triager
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Run Jules Issue Triager
+        uses: google-labs-code/jules-action@main
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            A new issue has been created:
+            Title: ${{ github.event.issue.title }}
+            Description: ${{ github.event.issue.body }}
+            
+            Analyze the technical scope of this request. Determine if it is a bug, feature request, or documentation task.
+            If the issue is straightforward and self-contained, label it as a "good first issue" and add a short comment outlining which files in the repository a contributor should inspect to solve it.
