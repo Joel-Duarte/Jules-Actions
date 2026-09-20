@@ -1,0 +1,24 @@
+name: Jules PR QA Reviewer
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  qa-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Run Jules PR QA Agent
+        uses: google-labs-code/jules-action@main
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            You are a quality assurance engineer reviewing this pull request.
+            Analyze the diff and repository context to evaluate:
+            - Are there appropriate unit or integration tests included for the new code or bug fixes?
+            - Are there obvious edge cases, error states, or performance risks left untested?
+            - Verify that the existing test suite runs and passes cleanly with these changes.
+            
+            Post a clear, structured review comment on the pull request summarizing your QA findings, test coverage gaps, and recommendations.
