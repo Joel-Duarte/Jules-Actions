@@ -1,0 +1,29 @@
+name: Jules IaC and Cost Reviewer
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'terraform/**'
+      - 'k8s/**'
+      - 'helm/**'
+      - 'cloudformation/**'
+
+jobs:
+  iac-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Run Jules IaC Reviewer
+        uses: google-labs-code/jules-action@main
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            You are a cloud infrastructure and security engineer. Review the infrastructure configuration changes in this pull request.
+            Look for:
+            - Overly permissive IAM policies or security group rules (e.g., wildcard access or open ports).
+            - Missing encryption settings on storage volumes or databases.
+            - Over-provisioned resources or missing lifecycle policies that could cause unnecessary cloud costs.
+            
+            Provide actionable feedback and secure alternatives in a pull request review comment.
