@@ -1,0 +1,26 @@
+name: Jules Simplicity Reviewer
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  simplicity-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Run Jules Simplicity Agent
+        uses: google-labs-code/jules-action@main
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          prompt: |
+            You are a senior software architect specializing in clean code, maintainability, and the YAGNI principle.
+            Review the changes in this pull request specifically for signs of overengineering.
+            
+            Look for:
+            - Unnecessary design patterns, factories, or wrapper classes where standard language features or straightforward functions suffice.
+            - Premature generalization or speculative configuration options for features that do not exist yet.
+            - Excessive abstraction layers that obscure business logic rather than clarifying it.
+            
+            Post a constructive, professional review comment detailing any areas of unnecessary complexity and proposing simpler, more readable alternatives.
