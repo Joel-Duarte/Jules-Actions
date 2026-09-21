@@ -1,4 +1,4 @@
-name: Jules Dispatcher
+name: Jules Task Dispatcher
 
 on:
   push:
