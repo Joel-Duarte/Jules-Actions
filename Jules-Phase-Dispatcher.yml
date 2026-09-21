@@ -1,0 +1,67 @@
+name: Jules Phase Dispatcher
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'tasks.md'
+  workflow_dispatch:
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Parse Next Phase
+        id: parse-phase
+        run: |
+          if [ ! -f tasks.md ]; then
+            echo "tasks.md not found."
+            echo "completed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Use Python to find the first Phase block that still contains unchecked tasks
+          PYTHON_OUTPUT=$(python3 -c '
+          import re
+          with open("tasks.md", "r") as f:
+              content = f.read()
+
+          # Split content by Phase headers
+          phases = re.split(r"(?=## Phase )", content)
+          target_phase = ""
+          for phase in phases:
+              if "- [ ]" in phase:
+                  target_phase = phase.strip()
+                  break
+
+          if target_phase:
+              print("COMPLETED=false")
+              # Escape multiline output for GitHub Actions environment variables
+              escaped = target_phase.replace("%", "%25").replace("\n", "%0A").replace("\r", "%0D")
+              print(f"PHASE_CONTENT={escaped}")
+          else:
+              print("COMPLETED=true")
+          ')
+
+          echo "$PYTHON_OUTPUT" >> $GITHUB_OUTPUT
+
+      - name: Run Jules Phase
+        if: steps.parse-phase.outputs.COMPLETED == 'false'
+        uses: google-labs-code/jules-action@main
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          include_last_commit: false
+          prompt: |
+            You are an autonomous software engineering agent. Execute this entire phase objective:
+            ${{ steps.parse-phase.outputs.PHASE_CONTENT }}
+
+            Mandatory Instructions:
+            - Implement all requirements and deliverables listed in this phase.
+            - Update tasks.md to change all completed task checkboxes from '- [ ]' to '- [x]'.
+            - Ensure all code compiles cleanly and adheres strictly to project specifications and memory safety rules.
+            - Open a pull request targeting the repository default branch when finished.
