@@ -1,0 +1,63 @@
+name: Jules Dispatcher
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'tasks.md' # Checks for next [] bracket and sends that as a task to jules
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Parse Next Task
+        id: parse-task
+        run: |
+          if [ ! -f tasks.md ]; then
+            echo "tasks.md not found."
+            echo "completed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          NEXT_TASK=$(grep -m 1 '^- \[ \] ' tasks.md | sed 's/^- \[ \] //')
+          
+          if [ -z "$NEXT_TASK" ]; then
+            echo "All tasks completed!"
+            echo "completed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Found task: $NEXT_TASK"
+          echo "completed=false" >> $GITHUB_OUTPUT
+          
+          {
+            echo "task_description<<EOF"
+            echo "$NEXT_TASK"
+            echo "EOF"
+          } >> $GITHUB_ENV
+
+      - name: Run Jules Task
+        if: steps.parse-task.outputs.completed == 'false'
+        uses: google-labs-code/jules-action@main
+        with:
+          jules_api_key: ${{ secrets.JULES_API_KEY }}
+          include_last_commit: false
+          prompt: |
+            You are an autonomous software engineering agent. Execute this single task objective:
+            ${{ env.task_description }}
+
+            Mandatory Instructions:
+            - Focus exclusively on this single task objective.
+            - Modify tasks.md to change this task's checkbox from '- [ ]' to '- [x]'.
+            - Ensure all code compiles cleanly and adheres strictly to project specifications and memory safety rules.
+            - Open a pull request targeting the repository default branch when finished.
